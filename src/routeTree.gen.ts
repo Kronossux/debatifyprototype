@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as NewRouteImport } from './routes/new'
 import { Route as DebateDebateIdRouteImport } from './routes/debate.$debateId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -29,6 +30,11 @@ const LeaderboardRoute = LeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewRoute = NewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DebateDebateIdRoute = DebateDebateIdRouteImport.update({
   id: '/debate/$debateId',
   path: '/debate/$debateId',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/new': typeof NewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/new': typeof NewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/new': typeof NewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/leaderboard' | '/debate/$debateId'
+  fullPaths: '/' | '/auth' | '/leaderboard' | '/new' | '/debate/$debateId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/leaderboard' | '/debate/$debateId'
-  id: '__root__' | '/' | '/auth' | '/leaderboard' | '/debate/$debateId'
+  to: '/' | '/auth' | '/leaderboard' | '/new' | '/debate/$debateId'
+  id: '__root__' | '/' | '/auth' | '/leaderboard' | '/new' | '/debate/$debateId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  NewRoute: typeof NewRoute
   DebateDebateIdRoute: typeof DebateDebateIdRoute
 }
 
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/new': {
+      id: '/new'
+      path: '/new'
+      fullPath: '/new'
+      preLoaderRoute: typeof NewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/debate/$debateId': {
       id: '/debate/$debateId'
       path: '/debate/$debateId'
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   LeaderboardRoute: LeaderboardRoute,
+  NewRoute: NewRoute,
   DebateDebateIdRoute: DebateDebateIdRoute,
 }
 export const routeTree = rootRouteImport
