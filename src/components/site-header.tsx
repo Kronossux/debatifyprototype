@@ -45,6 +45,20 @@ export function SiteHeader() {
             Debates
           </Link>
           <Link
+            to="/articles"
+            activeProps={{ className: "bg-secondary text-secondary-foreground" }}
+            className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Articles
+          </Link>
+          <Link
+            to="/chat"
+            activeProps={{ className: "bg-secondary text-secondary-foreground" }}
+            className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Chat
+          </Link>
+          <Link
             to="/leaderboard"
             activeProps={{ className: "bg-secondary text-secondary-foreground" }}
             className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
@@ -61,7 +75,14 @@ export function SiteHeader() {
                   <PenSquare className="size-4" /> Start a debate
                 </Link>
               </Button>
-              <span className="hidden text-sm text-muted-foreground md:inline">@{username}</span>
+              <Link to="/profile" className="flex items-center gap-2">
+                <UserAvatar
+                  username={profile?.username ?? username}
+                  avatarUrl={profile?.avatar_url}
+                  className="size-8"
+                />
+                <span className="hidden text-sm text-muted-foreground md:inline">@{username}</span>
+              </Link>
               <Button size="sm" variant="ghost" onClick={signOut}>
                 Sign out
               </Button>
