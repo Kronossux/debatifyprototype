@@ -14,10 +14,150 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          body: string
+          created_at: string
+          debate_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          debate_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          debate_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_debate_id_fkey"
+            columns: ["debate_id"]
+            isOneToOne: false
+            referencedRelation: "debate_stats"
+            referencedColumns: ["debate_id"]
+          },
+          {
+            foreignKeyName: "comments_debate_id_fkey"
+            columns: ["debate_id"]
+            isOneToOne: false
+            referencedRelation: "debates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      debates: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          option_a: string
+          option_b: string
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          option_a?: string
+          option_b?: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          option_a?: string
+          option_b?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          username: string
+          username_lower: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          username: string
+          username_lower: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          username?: string
+          username_lower?: string
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          choice: string
+          created_at: string
+          debate_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          choice: string
+          created_at?: string
+          debate_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          choice?: string
+          created_at?: string
+          debate_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_debate_id_fkey"
+            columns: ["debate_id"]
+            isOneToOne: false
+            referencedRelation: "debate_stats"
+            referencedColumns: ["debate_id"]
+          },
+          {
+            foreignKeyName: "votes_debate_id_fkey"
+            columns: ["debate_id"]
+            isOneToOne: false
+            referencedRelation: "debates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      debate_stats: {
+        Row: {
+          comment_count: number | null
+          debate_id: string | null
+          total_votes: number | null
+          votes_a: number | null
+          votes_b: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
