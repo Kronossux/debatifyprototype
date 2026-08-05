@@ -81,19 +81,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Debatify — Vote on the debates people care about" },
+      { title: "Debatify — Vote on the debates people actually care about" },
       {
         name: "description",
         content:
-          "A community platform for ranking and voting on hot debate topics across culture, sports, tech, science and entertainment.",
+          "Browse hot debate topics across culture, sports, tech, science and entertainment. Cast your vote, see live percentages and argue it out in the comments.",
       },
-      { property: "og:title", content: "Debatify" },
+      { property: "og:title", content: "Debatify — Vote on the debates people actually care about" },
       {
         property: "og:description",
-        content: "Pick a side, see live results and argue it out.",
+        content: "Browse hot debate topics across culture, sports, tech, science and entertainment. Cast your vote, see live percentages and argue it out in the comments.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Debatify — Vote on the debates people actually care about" },
+      { name: "twitter:description", content: "Browse hot debate topics across culture, sports, tech, science and entertainment. Cast your vote, see live percentages and argue it out in the comments." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1e259c2-e461-4409-a2bc-84d3617561cc" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e1e259c2-e461-4409-a2bc-84d3617561cc" },
     ],
     links: [
       {

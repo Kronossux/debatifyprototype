@@ -15,10 +15,10 @@ export const Route = createFileRoute("/")({
         content:
           "Browse hot debate topics across culture, sports, tech, science and entertainment. Cast your vote, see live percentages and argue it out in the comments.",
       },
-      { property: "og:title", content: "Debatify — Vote on hot debates" },
+      { property: "og:title", content: "Debatify — Vote on the debates people actually care about" },
       {
         property: "og:description",
-        content: "Pick a side, see live results and join the conversation on Debatify.",
+        content: "Browse hot debate topics across culture, sports, tech, science and entertainment. Cast your vote, see live percentages and argue it out in the comments.",
       },
     ],
   }),
