@@ -1,14 +1,22 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Flame, PenSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { fetchProfile } from "@/lib/community";
+import { UserAvatar } from "@/components/user-avatar";
 import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
   const { user, username, loading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: () => fetchProfile(user!.id),
+    enabled: !!user,
+  });
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -37,6 +45,20 @@ export function SiteHeader() {
             Debates
           </Link>
           <Link
+            to="/articles"
+            activeProps={{ className: "bg-secondary text-secondary-foreground" }}
+            className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Articles
+          </Link>
+          <Link
+            to="/chat"
+            activeProps={{ className: "bg-secondary text-secondary-foreground" }}
+            className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Chat
+          </Link>
+          <Link
             to="/leaderboard"
             activeProps={{ className: "bg-secondary text-secondary-foreground" }}
             className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
@@ -53,7 +75,14 @@ export function SiteHeader() {
                   <PenSquare className="size-4" /> Start a debate
                 </Link>
               </Button>
-              <span className="hidden text-sm text-muted-foreground md:inline">@{username}</span>
+              <Link to="/profile" className="flex items-center gap-2">
+                <UserAvatar
+                  username={profile?.username ?? username}
+                  avatarUrl={profile?.avatar_url}
+                  className="size-8"
+                />
+                <span className="hidden text-sm text-muted-foreground md:inline">@{username}</span>
+              </Link>
               <Button size="sm" variant="ghost" onClick={signOut}>
                 Sign out
               </Button>
