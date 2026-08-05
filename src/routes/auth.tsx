@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type Search = { mode?: "signup" | "signin" };
+type Search = { mode?: "signup" | "signin" | undefined };
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>): Search => ({
-    mode: search["mode"] === "signup" ? "signup" : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): Search =>
+    search["mode"] === "signup" ? { mode: "signup" } : {},
+
   head: () => ({
     meta: [
       { title: "Sign in or join — Debatify" },
