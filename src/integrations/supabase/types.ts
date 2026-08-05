@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      articles: {
+        Row: {
+          author_id: string
+          body: string
+          category: string
+          created_at: string
+          id: string
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          category: string
+          created_at?: string
+          id?: string
+          summary?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           body: string
@@ -88,18 +142,21 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
           created_at: string
           id: string
           username: string
           username_lower: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string
           id: string
           username: string
           username_lower: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string
           id?: string
           username?: string
