@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as NewRouteImport } from './routes/new'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as DebateDebateIdRouteImport } from './routes/debate.$debateId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -25,6 +27,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
@@ -33,6 +40,11 @@ const LeaderboardRoute = LeaderboardRouteImport.update({
 const NewRoute = NewRouteImport.update({
   id: '/new',
   path: '/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DebateDebateIdRoute = DebateDebateIdRouteImport.update({
@@ -44,38 +56,68 @@ const DebateDebateIdRoute = DebateDebateIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/chat': typeof ChatRoute
   '/leaderboard': typeof LeaderboardRoute
   '/new': typeof NewRoute
+  '/profile': typeof ProfileRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/chat': typeof ChatRoute
   '/leaderboard': typeof LeaderboardRoute
   '/new': typeof NewRoute
+  '/profile': typeof ProfileRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/chat': typeof ChatRoute
   '/leaderboard': typeof LeaderboardRoute
   '/new': typeof NewRoute
+  '/profile': typeof ProfileRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/leaderboard' | '/new' | '/debate/$debateId'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/chat'
+    | '/leaderboard'
+    | '/new'
+    | '/profile'
+    | '/debate/$debateId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/leaderboard' | '/new' | '/debate/$debateId'
-  id: '__root__' | '/' | '/auth' | '/leaderboard' | '/new' | '/debate/$debateId'
+  to:
+    | '/'
+    | '/auth'
+    | '/chat'
+    | '/leaderboard'
+    | '/new'
+    | '/profile'
+    | '/debate/$debateId'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/chat'
+    | '/leaderboard'
+    | '/new'
+    | '/profile'
+    | '/debate/$debateId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  ChatRoute: typeof ChatRoute
   LeaderboardRoute: typeof LeaderboardRoute
   NewRoute: typeof NewRoute
+  ProfileRoute: typeof ProfileRoute
   DebateDebateIdRoute: typeof DebateDebateIdRoute
 }
 
@@ -95,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leaderboard': {
       id: '/leaderboard'
       path: '/leaderboard'
@@ -107,6 +156,13 @@ declare module '@tanstack/react-router' {
       path: '/new'
       fullPath: '/new'
       preLoaderRoute: typeof NewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/debate/$debateId': {
@@ -122,20 +178,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  ChatRoute: ChatRoute,
   LeaderboardRoute: LeaderboardRoute,
   NewRoute: NewRoute,
+  ProfileRoute: ProfileRoute,
   DebateDebateIdRoute: DebateDebateIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

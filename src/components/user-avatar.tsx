@@ -7,8 +7,8 @@ export function UserAvatar({
   className,
 }: {
   username: string | null;
-  avatarUrl?: string | null;
-  className?: string;
+  avatarUrl?: string | null | undefined;
+  className?: string | undefined;
 }) {
   const initial = (username ?? "?").trim().charAt(0).toUpperCase();
   return (
