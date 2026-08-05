@@ -1,14 +1,22 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Flame, PenSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { fetchProfile } from "@/lib/community";
+import { UserAvatar } from "@/components/user-avatar";
 import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
   const { user, username, loading } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: () => fetchProfile(user!.id),
+    enabled: !!user,
+  });
 
   async function signOut() {
     await queryClient.cancelQueries();
