@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft, MessageSquare, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -13,8 +12,11 @@ import {
   percent,
 } from "@/lib/debatify";
 import { useAuth } from "@/lib/auth";
+import { UserAvatar } from "@/components/user-avatar";
+import { RoleBadge } from "@/components/role-badge";
+import { MessageText } from "@/components/message-text";
+import { MessageComposer } from "@/components/message-composer";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/debate/$debateId")({
   head: () => ({
