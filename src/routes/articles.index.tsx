@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { CATEGORIES } from "@/lib/debatify";
 import { fetchArticles } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
+import { RoleBadge } from "@/components/role-badge";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/articles/")({
