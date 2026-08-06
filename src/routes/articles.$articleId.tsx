@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { deleteArticle, fetchArticle } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
+import { RoleBadge } from "@/components/role-badge";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/articles/$articleId")({
@@ -77,12 +78,26 @@ function ArticleDetail() {
       </span>
       <h1 className="mt-2 font-display text-4xl font-bold leading-tight">{data.title}</h1>
       {data.summary ? <p className="mt-3 text-lg text-muted-foreground">{data.summary}</p> : null}
+      {data.image_url ? (
+        <img
+          src={data.image_url}
+          alt={data.title}
+          className="mt-6 w-full rounded-2xl border border-border object-cover"
+        />
+      ) : null}
 
       <div className="mt-6 flex items-center justify-between gap-4 border-y border-border py-4">
         <div className="flex items-center gap-3">
-          <UserAvatar username={data.author} avatarUrl={data.avatar_url} />
+          <Link to="/u/$username" params={{ username: data.author }}>
+            <UserAvatar username={data.author} avatarUrl={data.avatar_url} />
+          </Link>
           <div className="text-sm">
-            <p className="font-medium">@{data.author}</p>
+            <p className="flex items-center gap-1.5 font-medium">
+              <Link to="/u/$username" params={{ username: data.author }} className="hover:underline">
+                @{data.author}
+              </Link>
+              <RoleBadge role={data.role} className="size-4" />
+            </p>
             <p className="text-muted-foreground">
               {new Date(data.created_at).toLocaleDateString(undefined, {
                 year: "numeric",
