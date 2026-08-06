@@ -156,22 +156,13 @@ function DebatePage() {
 
         {user ? (
           <div className="mt-4">
-            <Textarea
-              value={body}
-              maxLength={1000}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Make your case…"
+            <MessageComposer
+              placeholder="Make your case… use @ to mention someone"
+              submitLabel="Post comment"
               rows={3}
+              busy={commentMutation.isPending}
+              onSend={(body, imageUrl) => commentMutation.mutateAsync({ body, imageUrl })}
             />
-            <div className="mt-2 flex justify-end">
-              <Button
-                size="sm"
-                disabled={!body.trim() || commentMutation.isPending}
-                onClick={() => commentMutation.mutate()}
-              >
-                Post comment
-              </Button>
-            </div>
           </div>
         ) : (
           <div className="mt-4 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
