@@ -64,11 +64,10 @@ function DebatePage() {
     onError: () => toast.error("Could not save your vote."),
   });
 
-  const [body, setBody] = useState("");
   const commentMutation = useMutation({
-    mutationFn: () => addComment(debateId, user!.id, body.trim()),
+    mutationFn: ({ body, imageUrl }: { body: string; imageUrl: string | null }) =>
+      addComment(debateId, user!.id, body.trim(), imageUrl),
     onSuccess: () => {
-      setBody("");
       queryClient.invalidateQueries({ queryKey: ["comments", debateId] });
       queryClient.invalidateQueries({ queryKey: ["debate", debateId] });
     },
