@@ -19,7 +19,9 @@ export async function fetchRoles(ids: string[]): Promise<Map<string, AppRole>> {
   const { data } = await supabase.from("user_roles").select("user_id, role").in("user_id", unique);
   for (const r of data ?? []) {
     const current = map.get(r.user_id);
-    if (!current || ROLE_RANK[r.role] > ROLE_RANK[current]) map.set(r.user_id, r.role as AppRole);
+    const rank = ROLE_RANK[r.role] ?? 0;
+    const currentRank = current ? (ROLE_RANK[current] ?? 0) : -1;
+    if (rank > currentRank) map.set(r.user_id, r.role as AppRole);
   }
   return map;
 }
