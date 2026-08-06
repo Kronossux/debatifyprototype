@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Flame, MessageCircle, PenSquare } from "lucide-react";
+import { Flame, MessageCircle, PenSquare, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { fetchProfile } from "@/lib/community";
@@ -92,12 +92,30 @@ export function SiteHeader() {
                 />
                 <span className="hidden items-center gap-1.5 text-sm text-muted-foreground md:inline-flex">
                   @{username}
-                  <RoleBadge role={profile?.role} className="size-4" />
+                  <RoleBadge role={profile?.role} className="size-5" />
                 </span>
               </Link>
-              <Button size="sm" variant="ghost" onClick={signOut}>
-                Sign out
-              </Button>
+              <Link
+  to="/settings"
+  className="
+    group
+    relative
+    p-2
+    rounded-full
+    transition-all
+    hover:ring-2
+    hover:ring-black/40
+    dark:hover:ring-white/40
+  "
+>
+  <Settings
+    className="
+      size-5
+      transition-transform
+      group-hover:rotate-45
+    "
+  />
+</Link>
             </>
           ) : (
             <>
