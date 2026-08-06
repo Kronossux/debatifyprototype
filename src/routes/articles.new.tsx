@@ -141,6 +141,29 @@ function NewArticle() {
         </div>
 
         <div className="space-y-2">
+          <Label>Cover picture</Label>
+          {cover ? (
+            <img
+              src={cover}
+              alt="Selected article cover"
+              className="max-h-64 w-full rounded-xl border border-border object-cover"
+            />
+          ) : null}
+          <div className="flex gap-2">
+            <Button type="button" size="sm" variant="outline" onClick={() => fileRef.current?.click()}>
+              {cover ? "Change picture" : "Add picture"}
+            </Button>
+            {cover ? (
+              <Button type="button" size="sm" variant="ghost" onClick={() => setCover(null)}>
+                Remove
+              </Button>
+            ) : null}
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={pickCover} />
+        </div>
+
+
+        <div className="space-y-2">
           <Label htmlFor="body">Article</Label>
           <Textarea
             id="body"
