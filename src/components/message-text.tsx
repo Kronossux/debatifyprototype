@@ -8,7 +8,7 @@ export function MessageText({ text, className }: { text: string; className?: str
   return (
     <p className={className}>
       {parts.map((part, i) =>
-        MENTION.test(part) && i % 2 === 1 ? (
+        i % 2 === 1 ? (
           <Link
             key={i}
             to="/u/$username"
