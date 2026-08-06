@@ -21,6 +21,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          image_url: string | null
           summary: string
           title: string
           updated_at: string
@@ -31,6 +32,7 @@ export type Database = {
           category: string
           created_at?: string
           id?: string
+          image_url?: string | null
           summary?: string
           title: string
           updated_at?: string
@@ -41,6 +43,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           summary?: string
           title?: string
           updated_at?: string
@@ -52,18 +55,21 @@ export type Database = {
           body: string
           created_at: string
           id: string
+          image_url: string | null
           user_id: string
         }
         Insert: {
           body: string
           created_at?: string
           id?: string
+          image_url?: string | null
           user_id: string
         }
         Update: {
           body?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           user_id?: string
         }
         Relationships: []
@@ -74,6 +80,7 @@ export type Database = {
           created_at: string
           debate_id: string
           id: string
+          image_url: string | null
           user_id: string
         }
         Insert: {
@@ -81,6 +88,7 @@ export type Database = {
           created_at?: string
           debate_id: string
           id?: string
+          image_url?: string | null
           user_id: string
         }
         Update: {
@@ -88,6 +96,7 @@ export type Database = {
           created_at?: string
           debate_id?: string
           id?: string
+          image_url?: string | null
           user_id?: string
         }
         Relationships: [
@@ -140,9 +149,37 @@ export type Database = {
         }
         Relationships: []
       }
+      direct_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          image_url: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          recipient_id: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          recipient_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string
           created_at: string
           id: string
           username: string
@@ -150,6 +187,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string
           created_at?: string
           id: string
           username: string
@@ -157,10 +195,32 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bio?: string
           created_at?: string
           id?: string
           username?: string
           username_lower?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -217,10 +277,16 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "founder" | "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -347,6 +413,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["founder", "admin", "moderator", "user"],
+    },
   },
 } as const
