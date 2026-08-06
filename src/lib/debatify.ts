@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { fetchProfiles, type AppRole } from "@/lib/community";
 
 export const CATEGORIES = ["Culture", "Sports", "Tech", "Science", "Entertainment"] as const;
 export type Category = (typeof CATEGORIES)[number];
@@ -88,35 +89,40 @@ export async function castVote(debateId: string, userId: string, choice: "a" | "
 export type CommentRow = {
   id: string;
   body: string;
+  image_url: string | null;
   created_at: string;
   user_id: string;
   author: string;
+  avatar_url: string | null;
+  role: AppRole | null;
 };
 
 export async function fetchComments(debateId: string): Promise<CommentRow[]> {
   const { data, error } = await supabase
     .from("comments")
-    .select("id, body, created_at, user_id")
+    .select("id, body, image_url, created_at, user_id")
     .eq("debate_id", debateId)
     .order("created_at", { ascending: false });
   if (error) throw error;
   const rows = data ?? [];
-  const ids = [...new Set(rows.map((r) => r.user_id))];
-  const names = new Map<string, string>();
-  if (ids.length) {
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("id, username")
-      .in("id", ids);
-    for (const p of profiles ?? []) names.set(p.id as string, p.username as string);
-  }
-  return rows.map((r) => ({ ...r, author: names.get(r.user_id) ?? "member" }));
+  const profiles = await fetchProfiles(rows.map((r) => r.user_id));
+  return rows.map((r) => ({
+    ...r,
+    author: profiles.get(r.user_id)?.username ?? "member",
+    avatar_url: profiles.get(r.user_id)?.avatar_url ?? null,
+    role: profiles.get(r.user_id)?.role ?? null,
+  }));
 }
 
-export async function addComment(debateId: string, userId: string, body: string) {
+export async function addComment(
+  debateId: string,
+  userId: string,
+  body: string,
+  imageUrl?: string | null,
+) {
   const { error } = await supabase
     .from("comments")
-    .insert({ debate_id: debateId, user_id: userId, body });
+    .insert({ debate_id: debateId, user_id: userId, body, image_url: imageUrl ?? null });
   if (error) throw error;
 }
 

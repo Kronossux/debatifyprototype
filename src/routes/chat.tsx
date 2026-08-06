@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { fetchChat, sendChatMessage } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
+import { RoleBadge } from "@/components/role-badge";
+import { MessageText } from "@/components/message-text";
+import { MessageComposer } from "@/components/message-composer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/chat")({
       {
         name: "description",
         content:
-          "Jump into Debatify's global chat room: one live feed where the whole community argues, jokes and reacts in real time.",
+          "Jump into Debatify's global chat room: one live feed where the whole community argues, jokes and reacts in real time — with pictures and @mentions.",
       },
       { property: "og:title", content: "Global chat — Debatify" },
       {
@@ -34,8 +35,6 @@ export const Route = createFileRoute("/chat")({
 function ChatPage() {
   const { user, username } = useAuth();
   const queryClient = useQueryClient();
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const { data: messages } = useQuery({ queryKey: ["chat"], queryFn: () => fetchChat() });
@@ -58,19 +57,13 @@ function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  async function send(e: React.FormEvent) {
-    e.preventDefault();
-    const body = text.trim();
-    if (!body || !user) return;
-    setBusy(true);
+  async function send(body: string, imageUrl: string | null) {
+    if (!user) return;
     try {
-      await sendChatMessage(user.id, body.slice(0, 500));
-      setText("");
+      await sendChatMessage(user.id, body.slice(0, 500), imageUrl);
       await queryClient.invalidateQueries({ queryKey: ["chat"] });
     } catch {
       toast.error("Message didn't send.");
-    } finally {
-      setBusy(false);
     }
   }
 
@@ -78,7 +71,7 @@ function ChatPage() {
     <div className="mx-auto flex w-full max-w-3xl flex-col px-4 py-8">
       <h1 className="font-display text-3xl font-bold">Global chat</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        One room, everyone in it. Be sharp, not cruel.
+        One room, everyone in it. Type @ to mention someone, or attach a picture.
       </p>
 
       <div className="mt-6 flex h-[60vh] flex-col gap-4 overflow-y-auto rounded-2xl border border-border bg-card p-4 shadow-card">
@@ -89,10 +82,19 @@ function ChatPage() {
         ) : (
           messages.map((m) => (
             <div key={m.id} className="flex items-start gap-3">
-              <UserAvatar username={m.author} avatarUrl={m.avatar_url} className="size-8" />
+              <Link to="/u/$username" params={{ username: m.author }}>
+                <UserAvatar username={m.author} avatarUrl={m.avatar_url} className="size-8" />
+              </Link>
               <div className="min-w-0">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-semibold">@{m.author}</span>
+                  <Link
+                    to="/u/$username"
+                    params={{ username: m.author }}
+                    className="text-sm font-semibold hover:underline"
+                  >
+                    @{m.author}
+                  </Link>
+                  <RoleBadge role={m.role} className="size-4 translate-y-0.5" />
                   <span className="text-xs text-muted-foreground">
                     {new Date(m.created_at).toLocaleTimeString([], {
                       hour: "2-digit",
@@ -100,7 +102,19 @@ function ChatPage() {
                     })}
                   </span>
                 </div>
-                <p className="whitespace-pre-wrap break-words text-sm text-foreground/90">{m.body}</p>
+                {m.body ? (
+                  <MessageText
+                    text={m.body}
+                    className="whitespace-pre-wrap break-words text-sm text-foreground/90"
+                  />
+                ) : null}
+                {m.image_url ? (
+                  <img
+                    src={m.image_url}
+                    alt={`Picture shared by ${m.author}`}
+                    className="mt-2 max-h-72 rounded-xl border border-border object-cover"
+                  />
+                ) : null}
               </div>
             </div>
           ))
@@ -109,17 +123,13 @@ function ChatPage() {
       </div>
 
       {user ? (
-        <form onSubmit={send} className="mt-4 flex gap-2">
-          <Input
-            value={text}
-            maxLength={500}
-            onChange={(e) => setText(e.target.value)}
+        <div className="mt-4">
+          <MessageComposer
             placeholder={`Say something as @${username ?? "you"}…`}
+            maxLength={500}
+            onSend={send}
           />
-          <Button type="submit" disabled={busy || !text.trim()}>
-            <Send className="size-4" />
-          </Button>
-        </form>
+        </div>
       ) : (
         <div className="mt-4 flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 text-sm">
           <span className="text-muted-foreground">Sign in to join the chat.</span>

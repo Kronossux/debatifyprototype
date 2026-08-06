@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft, MessageSquare, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -13,8 +12,11 @@ import {
   percent,
 } from "@/lib/debatify";
 import { useAuth } from "@/lib/auth";
+import { UserAvatar } from "@/components/user-avatar";
+import { RoleBadge } from "@/components/role-badge";
+import { MessageText } from "@/components/message-text";
+import { MessageComposer } from "@/components/message-composer";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/debate/$debateId")({
   head: () => ({
@@ -64,11 +66,10 @@ function DebatePage() {
     onError: () => toast.error("Could not save your vote."),
   });
 
-  const [body, setBody] = useState("");
   const commentMutation = useMutation({
-    mutationFn: () => addComment(debateId, user!.id, body.trim()),
+    mutationFn: ({ body, imageUrl }: { body: string; imageUrl: string | null }) =>
+      addComment(debateId, user!.id, body.trim(), imageUrl),
     onSuccess: () => {
-      setBody("");
       queryClient.invalidateQueries({ queryKey: ["comments", debateId] });
       queryClient.invalidateQueries({ queryKey: ["debate", debateId] });
     },
@@ -156,22 +157,13 @@ function DebatePage() {
 
         {user ? (
           <div className="mt-4">
-            <Textarea
-              value={body}
-              maxLength={1000}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Make your case…"
+            <MessageComposer
+              placeholder="Make your case… use @ to mention someone"
+              submitLabel="Post comment"
               rows={3}
+              busy={commentMutation.isPending}
+              onSend={(body, imageUrl) => commentMutation.mutateAsync({ body, imageUrl })}
             />
-            <div className="mt-2 flex justify-end">
-              <Button
-                size="sm"
-                disabled={!body.trim() || commentMutation.isPending}
-                onClick={() => commentMutation.mutate()}
-              >
-                Post comment
-              </Button>
-            </div>
           </div>
         ) : (
           <div className="mt-4 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
@@ -185,13 +177,32 @@ function DebatePage() {
         <ul className="mt-6 space-y-4">
           {(comments ?? []).map((c) => (
             <li key={c.id} className="rounded-xl border border-border bg-card p-4">
-              <div className="flex items-baseline gap-2 text-sm">
-                <span className="font-semibold">@{c.author}</span>
+              <div className="flex items-center gap-2 text-sm">
+                <Link to="/u/$username" params={{ username: c.author }}>
+                  <UserAvatar username={c.author} avatarUrl={c.avatar_url} className="size-7" />
+                </Link>
+                <Link
+                  to="/u/$username"
+                  params={{ username: c.author }}
+                  className="font-semibold hover:underline"
+                >
+                  @{c.author}
+                </Link>
+                <RoleBadge role={c.role} className="size-4" />
                 <span className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}
                 </span>
               </div>
-              <p className="mt-2 whitespace-pre-wrap text-sm">{c.body}</p>
+              {c.body ? (
+                <MessageText text={c.body} className="mt-2 whitespace-pre-wrap text-sm" />
+              ) : null}
+              {c.image_url ? (
+                <img
+                  src={c.image_url}
+                  alt={`Picture shared by ${c.author}`}
+                  className="mt-3 max-h-80 rounded-xl border border-border object-cover"
+                />
+              ) : null}
             </li>
           ))}
           {comments && comments.length === 0 ? (

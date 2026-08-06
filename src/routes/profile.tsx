@@ -3,7 +3,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
-import { fetchProfile, fileToAvatarDataUrl, updateAvatar } from "@/lib/community";
+import { fetchProfile, fileToAvatarDataUrl, updateAvatar, updateBio } from "@/lib/community";
+import { RoleBadge } from "@/components/role-badge";
+import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/user-avatar";
 import { Button } from "@/components/ui/button";
 
@@ -30,6 +32,8 @@ function ProfilePage() {
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [bio, setBio] = useState<string | null>(null);
+  const [savingBio, setSavingBio] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", search: { mode: "signin" }, replace: true });
@@ -40,6 +44,20 @@ function ProfilePage() {
     queryFn: () => fetchProfile(user!.id),
     enabled: !!user,
   });
+
+  async function saveBio() {
+    if (!user) return;
+    setSavingBio(true);
+    try {
+      await updateBio(user.id, (bio ?? "").slice(0, 300));
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Bio saved");
+    } catch {
+      toast.error("Could not save your bio.");
+    } finally {
+      setSavingBio(false);
+    }
+  }
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -91,7 +109,10 @@ function ProfilePage() {
           className="size-20"
         />
         <div className="space-y-3">
-          <p className="font-semibold">@{profile?.username ?? username ?? "you"}</p>
+          <p className="flex items-center gap-2 font-semibold">
+            @{profile?.username ?? username ?? "you"}
+            <RoleBadge role={profile?.role} />
+          </p>
           <div className="flex flex-wrap gap-2">
             <Button size="sm" disabled={busy} onClick={() => fileRef.current?.click()}>
               {busy ? "Saving…" : "Upload picture"}
@@ -109,6 +130,26 @@ function ProfilePage() {
             className="hidden"
             onChange={onPick}
           />
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-card">
+        <h2 className="font-semibold">Bio</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          A short line about you, shown on your public profile.
+        </p>
+        <Textarea
+          className="mt-3"
+          rows={3}
+          maxLength={300}
+          value={bio ?? profile?.bio ?? ""}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="Debater, sceptic, occasional contrarian…"
+        />
+        <div className="mt-3 flex justify-end">
+          <Button size="sm" disabled={savingBio} onClick={saveBio}>
+            {savingBio ? "Saving…" : "Save bio"}
+          </Button>
         </div>
       </div>
     </div>

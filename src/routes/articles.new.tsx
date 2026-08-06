@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useAuth } from "@/lib/auth";
 import { CATEGORIES } from "@/lib/debatify";
-import { createArticle } from "@/lib/community";
+import { createArticle, fileToImageDataUrl } from "@/lib/community";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +38,8 @@ function NewArticle() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const [cover, setCover] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     title: "",
     summary: "",
@@ -49,6 +51,21 @@ function NewArticle() {
     if (!loading && !user) navigate({ to: "/auth", search: { mode: "signup" }, replace: true });
   }, [loading, user, navigate]);
 
+  async function pickCover(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Pick an image under 10MB.");
+      return;
+    }
+    try {
+      setCover(await fileToImageDataUrl(file, 1200));
+    } catch {
+      toast.error("That image couldn't be read.");
+    }
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const parsed = schema.safeParse(form);
@@ -58,7 +75,7 @@ function NewArticle() {
     }
     setBusy(true);
     try {
-      const id = await createArticle({ ...parsed.data, author_id: user!.id });
+      const id = await createArticle({ ...parsed.data, author_id: user!.id, image_url: cover });
       toast.success("Article published");
       navigate({ to: "/articles/$articleId", params: { articleId: id } });
     } catch {
@@ -67,6 +84,7 @@ function NewArticle() {
       setBusy(false);
     }
   }
+
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-12">
@@ -121,6 +139,29 @@ function NewArticle() {
             ))}
           </div>
         </div>
+
+        <div className="space-y-2">
+          <Label>Cover picture</Label>
+          {cover ? (
+            <img
+              src={cover}
+              alt="Selected article cover"
+              className="max-h-64 w-full rounded-xl border border-border object-cover"
+            />
+          ) : null}
+          <div className="flex gap-2">
+            <Button type="button" size="sm" variant="outline" onClick={() => fileRef.current?.click()}>
+              {cover ? "Change picture" : "Add picture"}
+            </Button>
+            {cover ? (
+              <Button type="button" size="sm" variant="ghost" onClick={() => setCover(null)}>
+                Remove
+              </Button>
+            ) : null}
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={pickCover} />
+        </div>
+
 
         <div className="space-y-2">
           <Label htmlFor="body">Article</Label>
