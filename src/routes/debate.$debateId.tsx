@@ -185,13 +185,32 @@ function DebatePage() {
         <ul className="mt-6 space-y-4">
           {(comments ?? []).map((c) => (
             <li key={c.id} className="rounded-xl border border-border bg-card p-4">
-              <div className="flex items-baseline gap-2 text-sm">
-                <span className="font-semibold">@{c.author}</span>
+              <div className="flex items-center gap-2 text-sm">
+                <Link to="/u/$username" params={{ username: c.author }}>
+                  <UserAvatar username={c.author} avatarUrl={c.avatar_url} className="size-7" />
+                </Link>
+                <Link
+                  to="/u/$username"
+                  params={{ username: c.author }}
+                  className="font-semibold hover:underline"
+                >
+                  @{c.author}
+                </Link>
+                <RoleBadge role={c.role} className="size-4" />
                 <span className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}
                 </span>
               </div>
-              <p className="mt-2 whitespace-pre-wrap text-sm">{c.body}</p>
+              {c.body ? (
+                <MessageText text={c.body} className="mt-2 whitespace-pre-wrap text-sm" />
+              ) : null}
+              {c.image_url ? (
+                <img
+                  src={c.image_url}
+                  alt={`Picture shared by ${c.author}`}
+                  className="mt-3 max-h-80 rounded-xl border border-border object-cover"
+                />
+              ) : null}
             </li>
           ))}
           {comments && comments.length === 0 ? (
