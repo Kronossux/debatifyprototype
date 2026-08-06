@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { fetchProfiles, type AppRole } from "@/lib/community";
 
 export const CATEGORIES = ["Culture", "Sports", "Tech", "Science", "Entertainment"] as const;
 export type Category = (typeof CATEGORIES)[number];
