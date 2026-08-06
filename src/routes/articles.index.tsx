@@ -79,6 +79,13 @@ function ArticlesPage() {
               params={{ articleId: a.id }}
               className="rounded-2xl border border-border bg-card p-5 shadow-card transition-colors hover:border-primary/50"
             >
+              {a.image_url ? (
+                <img
+                  src={a.image_url}
+                  alt={a.title}
+                  className="mb-4 h-36 w-full rounded-xl border border-border object-cover"
+                />
+              ) : null}
               <span className="text-xs font-medium uppercase tracking-wide text-accent">
                 {a.category}
               </span>
@@ -88,8 +95,10 @@ function ArticlesPage() {
               ) : null}
               <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                 <UserAvatar username={a.author} avatarUrl={a.avatar_url} className="size-6" />
-                @{a.author} · {new Date(a.created_at).toLocaleDateString()}
+                @{a.author}
+                <RoleBadge role={a.role} className="size-4" />· {new Date(a.created_at).toLocaleDateString()}
               </div>
+
             </Link>
           ))}
         </div>
