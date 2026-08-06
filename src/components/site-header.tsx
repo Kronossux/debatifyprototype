@@ -1,10 +1,12 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Flame, PenSquare } from "lucide-react";
+import { Flame, MessageCircle, PenSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { fetchProfile } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
+import { RoleBadge } from "@/components/role-badge";
+import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
@@ -67,12 +69,19 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <SearchBar className="ml-auto hidden w-56 md:block lg:w-72" />
+
+        <div className="ml-auto flex items-center gap-2 md:ml-3">
           {loading ? null : user ? (
             <>
               <Button asChild size="sm" variant="secondary" className="hidden sm:inline-flex">
                 <Link to="/new">
                   <PenSquare className="size-4" /> Start a debate
+                </Link>
+              </Button>
+              <Button asChild size="icon" variant="ghost" title="Messages">
+                <Link to="/messages">
+                  <MessageCircle className="size-4" />
                 </Link>
               </Button>
               <Link to="/profile" className="flex items-center gap-2">
@@ -81,7 +90,10 @@ export function SiteHeader() {
                   avatarUrl={profile?.avatar_url}
                   className="size-8"
                 />
-                <span className="hidden text-sm text-muted-foreground md:inline">@{username}</span>
+                <span className="hidden items-center gap-1.5 text-sm text-muted-foreground md:inline-flex">
+                  @{username}
+                  <RoleBadge role={profile?.role} className="size-4" />
+                </span>
               </Link>
               <Button size="sm" variant="ghost" onClick={signOut}>
                 Sign out
