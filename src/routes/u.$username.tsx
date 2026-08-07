@@ -89,8 +89,9 @@ function PublicProfilePage() {
           <Button asChild size="sm">
             <Link
               to={user ? "/messages/$username" : "/auth"}
-              params={user ? { username: profile.username } : undefined}
-              search={user ? undefined : { mode: "signin" as const }}
+              params={user ? { username: profile.username } : {}}
+              search={user ? {} : { mode: "signin" as const }}
+
             >
               <MessageCircle className="size-4" /> Message
             </Link>
