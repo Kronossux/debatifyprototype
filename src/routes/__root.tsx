@@ -157,8 +157,6 @@ function RootComponent() {
         </AuthProvider>
       </PreferencesProvider>
     </QueryClientProvider>
-
-    </QueryClientProvider>
   );
 }
 
