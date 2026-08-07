@@ -7,7 +7,7 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
-  base: "/debatifyprototype/",
+
 
   tanstackStart: {
     server: { entry: "server" },
