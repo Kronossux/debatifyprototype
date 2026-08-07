@@ -141,19 +141,23 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="flex min-h-screen flex-col">
-          <SiteHeader />
-          <main className="flex-1">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </main>
-          <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-            Debatify — opinions, ranked by the crowd.
-          </footer>
-        </div>
-        <Toaster position="top-center" richColors />
-      </AuthProvider>
+      <PreferencesProvider>
+        <AuthProvider>
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+            </main>
+            <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
+              Debatify — opinions, ranked by the crowd.
+            </footer>
+          </div>
+          <Toaster position="top-center" richColors />
+        </AuthProvider>
+      </PreferencesProvider>
+    </QueryClientProvider>
+
     </QueryClientProvider>
   );
 }
