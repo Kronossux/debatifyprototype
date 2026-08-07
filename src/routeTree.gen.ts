@@ -15,6 +15,7 @@ import { Route as ChatRouteImport } from './routes/chat'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as NewRouteImport } from './routes/new'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesArticleIdRouteImport } from './routes/articles.$articleId'
 import { Route as ArticlesNewRouteImport } from './routes/articles.new'
@@ -51,6 +52,11 @@ const NewRoute = NewRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/new': typeof NewRoute
   '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles/new': typeof ArticlesNewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/new': typeof NewRoute
   '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles/new': typeof ArticlesNewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/new': typeof NewRoute
   '/profile': typeof ProfileRoute
+  '/settings': typeof SettingsRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles/new': typeof ArticlesNewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/new'
     | '/profile'
+    | '/settings'
     | '/articles/$articleId'
     | '/articles/new'
     | '/debate/$debateId'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/new'
     | '/profile'
+    | '/settings'
     | '/articles/$articleId'
     | '/articles/new'
     | '/debate/$debateId'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/new'
     | '/profile'
+    | '/settings'
     | '/articles/$articleId'
     | '/articles/new'
     | '/debate/$debateId'
@@ -190,6 +202,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   NewRoute: typeof NewRoute
   ProfileRoute: typeof ProfileRoute
+  SettingsRoute: typeof SettingsRoute
   ArticlesArticleIdRoute: typeof ArticlesArticleIdRoute
   ArticlesNewRoute: typeof ArticlesNewRoute
   DebateDebateIdRoute: typeof DebateDebateIdRoute
@@ -241,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/articles/': {
@@ -302,6 +322,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   NewRoute: NewRoute,
   ProfileRoute: ProfileRoute,
+  SettingsRoute: SettingsRoute,
   ArticlesArticleIdRoute: ArticlesArticleIdRoute,
   ArticlesNewRoute: ArticlesNewRoute,
   DebateDebateIdRoute: DebateDebateIdRoute,

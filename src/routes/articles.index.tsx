@@ -48,7 +48,7 @@ function ArticlesPage() {
           </p>
         </div>
         <Button asChild>
-          <Link to={user ? "/articles/new" : "/auth"} search={user ? undefined : { mode: "signup" }}>
+          <Link to={user ? "/articles/new" : "/auth"} search={user ? {} : { mode: "signup" }}>
             <PenLine className="size-4" /> Write an article
           </Link>
         </Button>
