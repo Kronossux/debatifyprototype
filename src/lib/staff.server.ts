@@ -31,7 +31,7 @@ export async function logAction(
   action: string,
   targetType = "",
   targetId: string | null = null,
-  details: Record<string, unknown> = {},
+  details: Record<string, string | number | boolean | null> = {},
 ) {
   await supabaseAdmin
     .from("staff_audit_log")
@@ -93,15 +93,15 @@ export async function siteAnalytics() {
   };
 }
 
-const CONTENT_TABLES: Record<string, string> = {
+const CONTENT_TABLES = {
   debate: "debates",
   comment: "comments",
   chat: "chat_messages",
   article: "articles",
-};
+} as const;
 
 export async function removeContent(type: string, id: string) {
-  const table = CONTENT_TABLES[type];
+  const table = CONTENT_TABLES[type as keyof typeof CONTENT_TABLES];
   if (!table) throw new Error("Unknown content type");
   const { error } = await supabaseAdmin.from(table).delete().eq("id", id);
   if (error) throw new Error(error.message);
