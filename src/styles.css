@@ -206,3 +206,12 @@
 @utility flip-face-back {
   transform: rotateY(180deg);
 }
+
+/* Hide Lovable edit button */
+[class*="lovable"],
+[data-lovable],
+button[aria-label*="Lovable"],
+button[aria-label*="Edit"],
+.lovable-button {
+  display: none !important;
+}
