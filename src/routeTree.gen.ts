@@ -14,9 +14,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as ModeratorRouteImport } from './routes/moderator'
 import { Route as NewRouteImport } from './routes/new'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as ViceAdminRouteImport } from './routes/vice-admin'
 import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
 import { Route as ArticlesArticleIdRouteImport } from './routes/articles.$articleId'
 import { Route as ArticlesNewRouteImport } from './routes/articles.new'
@@ -50,6 +52,11 @@ const LeaderboardRoute = LeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModeratorRoute = ModeratorRouteImport.update({
+  id: '/moderator',
+  path: '/moderator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewRoute = NewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -63,6 +70,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ViceAdminRoute = ViceAdminRouteImport.update({
+  id: '/vice-admin',
+  path: '/vice-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
@@ -107,9 +119,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/chat': typeof ChatRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/moderator': typeof ModeratorRoute
   '/new': typeof NewRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/vice-admin': typeof ViceAdminRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles/new': typeof ArticlesNewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
@@ -124,9 +138,11 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/chat': typeof ChatRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/moderator': typeof ModeratorRoute
   '/new': typeof NewRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/vice-admin': typeof ViceAdminRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles/new': typeof ArticlesNewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
@@ -142,9 +158,11 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/chat': typeof ChatRoute
   '/leaderboard': typeof LeaderboardRoute
+  '/moderator': typeof ModeratorRoute
   '/new': typeof NewRoute
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
+  '/vice-admin': typeof ViceAdminRoute
   '/articles/$articleId': typeof ArticlesArticleIdRoute
   '/articles/new': typeof ArticlesNewRoute
   '/debate/$debateId': typeof DebateDebateIdRoute
@@ -161,9 +179,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/chat'
     | '/leaderboard'
+    | '/moderator'
     | '/new'
     | '/profile'
     | '/settings'
+    | '/vice-admin'
     | '/articles/$articleId'
     | '/articles/new'
     | '/debate/$debateId'
@@ -178,9 +198,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/chat'
     | '/leaderboard'
+    | '/moderator'
     | '/new'
     | '/profile'
     | '/settings'
+    | '/vice-admin'
     | '/articles/$articleId'
     | '/articles/new'
     | '/debate/$debateId'
@@ -195,9 +217,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/chat'
     | '/leaderboard'
+    | '/moderator'
     | '/new'
     | '/profile'
     | '/settings'
+    | '/vice-admin'
     | '/articles/$articleId'
     | '/articles/new'
     | '/debate/$debateId'
@@ -213,9 +237,11 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ChatRoute: typeof ChatRoute
   LeaderboardRoute: typeof LeaderboardRoute
+  ModeratorRoute: typeof ModeratorRoute
   NewRoute: typeof NewRoute
   ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
+  ViceAdminRoute: typeof ViceAdminRoute
   ArticlesArticleIdRoute: typeof ArticlesArticleIdRoute
   ArticlesNewRoute: typeof ArticlesNewRoute
   DebateDebateIdRoute: typeof DebateDebateIdRoute
@@ -262,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/moderator': {
+      id: '/moderator'
+      path: '/moderator'
+      fullPath: '/moderator'
+      preLoaderRoute: typeof ModeratorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/new': {
       id: '/new'
       path: '/new'
@@ -281,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vice-admin': {
+      id: '/vice-admin'
+      path: '/vice-admin'
+      fullPath: '/vice-admin'
+      preLoaderRoute: typeof ViceAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/articles/': {
@@ -341,9 +381,11 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ChatRoute: ChatRoute,
   LeaderboardRoute: LeaderboardRoute,
+  ModeratorRoute: ModeratorRoute,
   NewRoute: NewRoute,
   ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
+  ViceAdminRoute: ViceAdminRoute,
   ArticlesArticleIdRoute: ArticlesArticleIdRoute,
   ArticlesNewRoute: ArticlesNewRoute,
   DebateDebateIdRoute: DebateDebateIdRoute,
