@@ -208,10 +208,7 @@
 }
 
 /* Hide Lovable edit button */
-[class*="lovable"],
-[data-lovable],
-button[aria-label*="Lovable"],
-button[aria-label*="Edit"],
-.lovable-button {
+#lovable-badge,
+aside#lovable-badge {
   display: none !important;
 }
