@@ -74,7 +74,7 @@ function PublicProfilePage() {
           </h1>
           {profile.role && profile.role !== "user" ? (
             <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-accent">
-              {profile.role === "founder" ? "Founder & admin" : profile.role}
+              {profile.role === "vice_admin" ? "Vice admin" : profile.role}
             </p>
           ) : null}
           <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">

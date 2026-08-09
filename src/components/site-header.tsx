@@ -67,7 +67,35 @@ export function SiteHeader() {
           >
             Leaderboard
           </Link>
+          {profile?.role === "admin" ? (
+            <Link
+              to="/admin"
+              activeProps={{ className: "bg-secondary text-secondary-foreground" }}
+              className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Admin
+            </Link>
+          ) : null}
+          {profile?.role === "vice_admin" ? (
+            <Link
+              to="/vice-admin"
+              activeProps={{ className: "bg-secondary text-secondary-foreground" }}
+              className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Vice admin
+            </Link>
+          ) : null}
+          {profile?.role === "moderator" ? (
+            <Link
+              to="/moderator"
+              activeProps={{ className: "bg-secondary text-secondary-foreground" }}
+              className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Moderator
+            </Link>
+          ) : null}
         </nav>
+
 
         <SearchBar className="ml-auto hidden w-56 md:block lg:w-72" />
 

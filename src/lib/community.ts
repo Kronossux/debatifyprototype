@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "founder" | "admin" | "moderator" | "user";
+export type AppRole = "admin" | "vice_admin" | "moderator" | "user";
 
 export type PublicProfile = {
   id: string;
@@ -10,7 +10,8 @@ export type PublicProfile = {
   role: AppRole | null;
 };
 
-const ROLE_RANK: Record<string, number> = { founder: 3, admin: 2, moderator: 1, user: 0 };
+const ROLE_RANK: Record<string, number> = { admin: 3, vice_admin: 2, moderator: 1, user: 0 };
+
 
 export async function fetchRoles(ids: string[]): Promise<Map<string, AppRole>> {
   const map = new Map<string, AppRole>();
