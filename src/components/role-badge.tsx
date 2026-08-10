@@ -34,7 +34,7 @@ export function RoleBadge({
         src={badge}
         alt={role}
         className={cn(
-          "size-5 cursor-help object-contain",
+          "size-5 cursor-help rounded-full object-cover ring-1 ring-border",
           className
         )}
       />

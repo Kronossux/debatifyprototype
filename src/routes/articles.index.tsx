@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { PenLine } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { CATEGORIES } from "@/lib/debatify";
+import { CATEGORIES, fetchCategories } from "@/lib/debatify";
 import { fetchArticles } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
 import { RoleBadge } from "@/components/role-badge";
@@ -32,6 +32,8 @@ export const Route = createFileRoute("/articles/")({
 
 function ArticlesPage() {
   const { user } = useAuth();
+  const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const cats = categories ?? [...CATEGORIES];
   const [category, setCategory] = useState<string | null>(null);
   const { data, isLoading } = useQuery({
     queryKey: ["articles", category],
@@ -58,7 +60,7 @@ function ArticlesPage() {
         <Chip active={category === null} onClick={() => setCategory(null)}>
           All
         </Chip>
-        {CATEGORIES.map((c) => (
+        {cats.map((c) => (
           <Chip key={c} active={category === c} onClick={() => setCategory(c)}>
             {c}
           </Chip>

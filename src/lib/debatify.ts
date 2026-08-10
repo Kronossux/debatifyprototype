@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { fetchProfiles, type AppRole } from "@/lib/community";
+import { fetchProfile, fetchProfiles, type AppRole } from "@/lib/community";
 
 export const CATEGORIES = ["Culture", "Sports", "Tech", "Science", "Entertainment"] as const;
 export type Category = (typeof CATEGORIES)[number];
@@ -13,6 +13,7 @@ export type Debate = {
   option_b: string;
   created_by: string | null;
   created_at: string;
+  featured: boolean;
 };
 
 export type DebateStats = {
@@ -23,7 +24,30 @@ export type DebateStats = {
   comment_count: number;
 };
 
-export type DebateWithStats = Debate & { stats: DebateStats };
+export type DebateWithStats = Debate & {
+  stats: DebateStats;
+  author: string | null;
+  author_avatar: string | null;
+};
+
+/** Categories, live from the database (admins can add or hide them). */
+export async function fetchCategories(): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("categories")
+    .select("name, active, sort_order")
+    .eq("active", true)
+    .order("sort_order");
+  if (error || !data?.length) return [...CATEGORIES];
+  return data.map((c) => c.name);
+}
+
+/** Same debate for everyone, rotating once per day. */
+export function pickDailyDebate<T extends { id: string }>(debates: T[]): T | null {
+  if (!debates.length) return null;
+  const day = Math.floor(Date.now() / 864e5);
+  const sorted = [...debates].sort((a, b) => a.id.localeCompare(b.id));
+  return sorted[day % sorted.length] ?? null;
+}
 
 const emptyStats = (id: string): DebateStats => ({
   debate_id: id,
@@ -43,7 +67,14 @@ export async function fetchDebates(category?: string): Promise<DebateWithStats[]
   if (statsError) throw statsError;
 
   const map = new Map((stats ?? []).map((s) => [s.debate_id as string, s as DebateStats]));
-  return (data ?? []).map((d) => ({ ...(d as Debate), stats: map.get(d.id) ?? emptyStats(d.id) }));
+  const rows = (data ?? []) as Debate[];
+  const profiles = await fetchProfiles(rows.map((r) => r.created_by).filter((v): v is string => !!v));
+  return rows.map((d) => ({
+    ...d,
+    stats: map.get(d.id) ?? emptyStats(d.id),
+    author: d.created_by ? (profiles.get(d.created_by)?.username ?? null) : null,
+    author_avatar: d.created_by ? (profiles.get(d.created_by)?.avatar_url ?? null) : null,
+  }));
 }
 
 export async function fetchLeaderboard(): Promise<DebateWithStats[]> {
@@ -65,7 +96,14 @@ export async function fetchDebate(id: string): Promise<DebateWithStats | null> {
     .select("*")
     .eq("debate_id", id)
     .maybeSingle();
-  return { ...(data as Debate), stats: (stats as DebateStats) ?? emptyStats(id) };
+  const row = data as Debate;
+  const profile = row.created_by ? await fetchProfile(row.created_by) : null;
+  return {
+    ...row,
+    stats: (stats as DebateStats) ?? emptyStats(id),
+    author: profile?.username ?? null,
+    author_avatar: profile?.avatar_url ?? null,
+  };
 }
 
 export async function fetchMyVote(debateId: string, userId: string) {

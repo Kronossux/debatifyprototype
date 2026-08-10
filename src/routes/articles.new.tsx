@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useAuth } from "@/lib/auth";
-import { CATEGORIES } from "@/lib/debatify";
+import { CATEGORIES, fetchCategories } from "@/lib/debatify";
 import { createArticle, fileToImageDataUrl } from "@/lib/community";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,8 @@ export const Route = createFileRoute("/articles/new")({
 
 function NewArticle() {
   const { user, loading } = useAuth();
+  const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const cats = categories ?? [...CATEGORIES];
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [cover, setCover] = useState<string | null>(null);
@@ -123,7 +126,7 @@ function NewArticle() {
         <div className="space-y-2">
           <Label>Category</Label>
           <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => (
+            {cats.map((c) => (
               <button
                 key={c}
                 type="button"

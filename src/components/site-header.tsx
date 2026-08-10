@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Flame, MessageCircle, PenSquare, Settings } from "lucide-react";
+import { MessageCircle, PenSquare, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { fetchProfile } from "@/lib/community";
@@ -31,9 +31,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/85 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-3 px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-            <Flame className="size-4" />
-          </span>
+          <img src="/logo.png" alt="Debatify logo" className="size-9 rounded-lg object-contain" />
           <span className="font-display text-lg font-bold tracking-tight">Debatify</span>
         </Link>
 
