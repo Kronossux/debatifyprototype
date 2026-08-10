@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { isValidUsername, useAuth, usernameToEmail } from "@/lib/auth";
+import { logUserIP } from "@/lib/staff.functions";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +41,7 @@ function AuthPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const logIPFn = useServerFn(logUserIP);
 
   useEffect(() => {
     if (user) navigate({ to: "/", replace: true });
@@ -57,19 +60,34 @@ function AuthPage() {
     setBusy(true);
     const email = usernameToEmail(username);
     try {
+      let userId: string | null = null;
+
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: { data: { username: username.trim() } },
         });
         if (error) throw error;
+        userId = data.user?.id ?? null;
         toast.success(`Welcome, @${username.trim()}`);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        userId = data.user?.id ?? null;
         toast.success("Signed in");
       }
+
+      // Log the user's IP after successful authentication
+      if (userId) {
+        try {
+          await logIPFn({ data: { userId } });
+        } catch (err) {
+          // Silently fail - don't interrupt auth flow for IP logging errors
+          console.error("IP logging failed:", err);
+        }
+      }
+
       navigate({ to: "/", replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong";
