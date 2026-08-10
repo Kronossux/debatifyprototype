@@ -55,7 +55,26 @@ export async function listUsers(search: string) {
     const cur = roleMap.get(r.user_id) ?? "user";
     if ((RANK[role] ?? 0) > RANK[cur]) roleMap.set(r.user_id, role);
   }
-  return rows.map((r) => ({ ...r, role: roleMap.get(r.id) ?? ("user" as StaffRole) }));
+  
+  // Fetch IP data for each user
+  const { data: ipData } = await supabaseAdmin
+    .from("user_ip_log")
+    .select("user_id, ip_address, last_seen")
+    .order("last_seen", { ascending: false });
+  
+  const ipMap = new Map<string, { ip: string; lastSeen: string }>();
+  for (const ip of ipData ?? []) {
+    if (!ipMap.has(ip.user_id)) {
+      ipMap.set(ip.user_id, { ip: ip.ip_address, lastSeen: ip.last_seen });
+    }
+  }
+  
+  return rows.map((r) => ({ 
+    ...r, 
+    role: roleMap.get(r.id) ?? ("user" as StaffRole),
+    ip_address: ipMap.get(r.id)?.ip ?? "—",
+    last_ip_seen: ipMap.get(r.id)?.lastSeen ?? null,
+  }));
 }
 
 export async function siteAnalytics() {
