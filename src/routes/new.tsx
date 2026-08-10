@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +40,8 @@ export const Route = createFileRoute("/new")({
 
 function NewDebate() {
   const { user, loading } = useAuth();
+  const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const cats = categories ?? [...CATEGORIES];
   const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",

@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useAuth } from "@/lib/auth";
@@ -36,6 +37,8 @@ export const Route = createFileRoute("/articles/new")({
 
 function NewArticle() {
   const { user, loading } = useAuth();
+  const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const cats = categories ?? [...CATEGORIES];
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [cover, setCover] = useState<string | null>(null);

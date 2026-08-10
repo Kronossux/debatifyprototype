@@ -32,6 +32,8 @@ export const Route = createFileRoute("/articles/")({
 
 function ArticlesPage() {
   const { user } = useAuth();
+  const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: fetchCategories });
+  const cats = categories ?? [...CATEGORIES];
   const [category, setCategory] = useState<string | null>(null);
   const { data, isLoading } = useQuery({
     queryKey: ["articles", category],
