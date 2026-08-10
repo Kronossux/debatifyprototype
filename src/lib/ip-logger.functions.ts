@@ -11,7 +11,7 @@ export const logUserIP = createServerFn({ method: "POST" })
     if (request?.headers) {
       // Try various headers that might contain the client IP
       ipAddress =
-        request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
         request.headers.get("x-real-ip") ||
         request.headers.get("cf-connecting-ip") ||
         request.headers.get("x-client-ip") ||
