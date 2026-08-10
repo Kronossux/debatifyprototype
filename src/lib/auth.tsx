@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { logUserIP } from "@/lib/ip-logger.functions";
 
 export const USERNAME_DOMAIN = "debatify.app";
 
@@ -31,9 +32,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((_event, next) => {
+    const { data } = supabase.auth.onAuthStateChange((event, next) => {
       setSession(next);
       setLoading(false);
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && next?.user) {
+        void logUserIP({ data: { userId: next.user.id } }).catch(() => {});
+      }
     });
     supabase.auth.getSession().then(({ data: got }) => {
       setSession(got.session);

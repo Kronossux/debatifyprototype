@@ -157,7 +157,10 @@ function AdminDashboard() {
                   <span className="text-xs text-muted-foreground">({ROLE_LABEL[u.role as StaffRole]})</span>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  IP: {(u as any).ip_address || "—"}
+                  IP: {u.ip_address || "—"}
+                  {u.last_ip_seen
+                    ? ` · seen ${new Date(u.last_ip_seen).toLocaleString()}`
+                    : ""}
                 </div>
                 {u.banned_at && (
                   <div className="text-xs text-destructive">Banned — {u.ban_reason || "no reason"}</div>
@@ -235,6 +238,9 @@ function AdminDashboard() {
       </Card>
 
       <Card title="Debates">
+        <p className="mb-3 text-xs text-muted-foreground">
+          “Feature” pins a debate to the <strong>Featured by the staff</strong> row on the homepage.
+        </p>
         <div className="space-y-2">
           {(debatesQ.data ?? []).slice(0, 40).map((d) => (
             <div key={d.id} className="flex flex-wrap items-center gap-2 rounded-lg border border-border p-3 text-sm">
