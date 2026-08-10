@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useAuth } from "@/lib/auth";
-import { CATEGORIES } from "@/lib/debatify";
+import { CATEGORIES, fetchCategories } from "@/lib/debatify";
 import { createArticle, fileToImageDataUrl } from "@/lib/community";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,7 +123,7 @@ function NewArticle() {
         <div className="space-y-2">
           <Label>Category</Label>
           <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => (
+            {cats.map((c) => (
               <button
                 key={c}
                 type="button"

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { CATEGORIES } from "@/lib/debatify";
+import { CATEGORIES, fetchCategories } from "@/lib/debatify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -109,7 +109,7 @@ function NewDebate() {
         <div className="space-y-2">
           <Label>Category</Label>
           <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((c) => (
+            {cats.map((c) => (
               <button
                 key={c}
                 type="button"
