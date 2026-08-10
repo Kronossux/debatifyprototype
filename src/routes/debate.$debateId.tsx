@@ -17,6 +17,7 @@ import { RoleBadge } from "@/components/role-badge";
 import { MessageText } from "@/components/message-text";
 import { MessageComposer } from "@/components/message-composer";
 import { Button } from "@/components/ui/button";
+import { ModerationActions } from "@/components/moderation-actions";
 
 export const Route = createFileRoute("/debate/$debateId")({
   head: () => ({
@@ -114,7 +115,26 @@ function DebatePage() {
         </span>
       </div>
 
-      <h1 className="mt-3 text-3xl font-bold leading-tight sm:text-4xl">{debate.title}</h1>
+      <div className="mt-3 flex items-start gap-2">
+        <h1 className="flex-1 text-3xl font-bold leading-tight sm:text-4xl">{debate.title}</h1>
+        <ModerationActions
+          targetType="debate"
+          targetId={debate.id}
+          ownerId={debate.created_by}
+          onDone={() => navigate({ to: "/" })}
+          className="mt-2"
+        />
+      </div>
+      {debate.author ? (
+        <Link
+          to="/u/$username"
+          params={{ username: debate.author }}
+          className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <UserAvatar username={debate.author} avatarUrl={debate.author_avatar} className="size-6" />
+          Started by @{debate.author}
+        </Link>
+      ) : null}
       {debate.description ? (
         <p className="mt-3 text-muted-foreground">{debate.description}</p>
       ) : null}
@@ -192,6 +212,16 @@ function DebatePage() {
                 <span className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}
                 </span>
+                <ModerationActions
+                  targetType="comment"
+                  targetId={c.id}
+                  ownerId={c.user_id}
+                  onDone={() => {
+                    queryClient.invalidateQueries({ queryKey: ["comments", debateId] });
+                    queryClient.invalidateQueries({ queryKey: ["debate", debateId] });
+                  }}
+                  className="ml-auto"
+                />
               </div>
               {c.body ? (
                 <MessageText text={c.body} className="mt-2 whitespace-pre-wrap text-sm" />

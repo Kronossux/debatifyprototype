@@ -9,6 +9,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { RoleBadge } from "@/components/role-badge";
 import { MessageText } from "@/components/message-text";
 import { MessageComposer } from "@/components/message-composer";
+import { ModerationActions } from "@/components/moderation-actions";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/chat")({
@@ -101,6 +102,12 @@ function ChatPage() {
                       minute: "2-digit",
                     })}
                   </span>
+                  <ModerationActions
+                    targetType="chat"
+                    targetId={m.id}
+                    ownerId={m.user_id}
+                    onDone={() => void queryClient.invalidateQueries({ queryKey: ["chat"] })}
+                  />
                 </div>
                 {m.body ? (
                   <MessageText
