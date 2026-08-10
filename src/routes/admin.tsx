@@ -156,6 +156,9 @@ function AdminDashboard() {
                   @{u.username}{" "}
                   <span className="text-xs text-muted-foreground">({ROLE_LABEL[u.role as StaffRole]})</span>
                 </div>
+                <div className="text-xs text-muted-foreground">
+                  IP: {(u as any).ip_address || "—"}
+                </div>
                 {u.banned_at && (
                   <div className="text-xs text-destructive">Banned — {u.ban_reason || "no reason"}</div>
                 )}
