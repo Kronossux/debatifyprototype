@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo, useRef, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowLeft, MessageSquare, Users } from "lucide-react";
+import { ArrowLeft, EyeOff, MessageSquare, Users } from "lucide-react";
 import { toast } from "sonner";
 import {
   addComment,
@@ -12,8 +13,9 @@ import {
   percent,
 } from "@/lib/debatify";
 import { useAuth } from "@/lib/auth";
+import { useStaffRole } from "@/lib/staff";
+import { TranslateAllButton } from "@/lib/auto-translate";
 import { UserAvatar } from "@/components/user-avatar";
-import { RoleBadge } from "@/components/role-badge";
 import { MessageText } from "@/components/message-text";
 import { MessageComposer } from "@/components/message-composer";
 import { Button } from "@/components/ui/button";
@@ -56,6 +58,15 @@ function DebatePage() {
     queryKey: ["comments", debateId],
     queryFn: () => fetchComments(debateId),
   });
+
+  const { data: staff } = useStaffRole();
+  const isStaff = !!staff?.role && staff.role !== "user";
+  const [showDeleted, setShowDeleted] = useState(false);
+  const commentsRef = useRef<HTMLUListElement>(null);
+  const visibleComments = useMemo(
+    () => (comments ?? []).filter((c) => !c.deleted_at || (isStaff && showDeleted)),
+    [comments, isStaff, showDeleted],
+  );
 
   const voteMutation = useMutation({
     mutationFn: (choice: "a" | "b") => castVote(debateId, user!.id, choice),
@@ -194,9 +205,26 @@ function DebatePage() {
           </div>
         )}
 
-        <ul className="mt-6 space-y-4">
-          {(comments ?? []).map((c) => (
-            <li key={c.id} className="rounded-xl border border-border bg-card p-4">
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <TranslateAllButton targetRef={commentsRef} label="Translate all comments" />
+          {isStaff ? (
+            <button
+              type="button"
+              onClick={() => setShowDeleted((v) => !v)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <EyeOff className="size-3.5" />
+              {showDeleted ? "Hide deleted comments" : "See deleted comments"}
+            </button>
+          ) : null}
+        </div>
+
+        <ul ref={commentsRef} data-manual-translate className="mt-4 space-y-4">
+          {visibleComments.map((c) => (
+            <li
+              key={c.id}
+              className={`rounded-xl border border-border bg-card p-4 ${c.deleted_at ? "opacity-60" : ""}`}
+            >
               <div className="flex items-center gap-2 text-sm">
                 <Link to="/u/$username" params={{ username: c.author }}>
                   <UserAvatar username={c.author} avatarUrl={c.avatar_url} className="size-7" />
@@ -204,18 +232,24 @@ function DebatePage() {
                 <Link
                   to="/u/$username"
                   params={{ username: c.author }}
+                  data-no-translate
                   className="font-semibold hover:underline"
                 >
                   @{c.author}
                 </Link>
-                <RoleBadge role={c.role} className="size-4" />
-                <span className="text-xs text-muted-foreground">
+                <span data-no-translate className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}
                 </span>
+                {c.deleted_at ? (
+                  <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-destructive">
+                    Deleted
+                  </span>
+                ) : null}
                 <ModerationActions
                   targetType="comment"
                   targetId={c.id}
                   ownerId={c.user_id}
+                  deleted={!!c.deleted_at}
                   onDone={() => {
                     queryClient.invalidateQueries({ queryKey: ["comments", debateId] });
                     queryClient.invalidateQueries({ queryKey: ["debate", debateId] });
@@ -235,10 +269,11 @@ function DebatePage() {
               ) : null}
             </li>
           ))}
-          {comments && comments.length === 0 ? (
+          {comments && visibleComments.length === 0 ? (
             <li className="text-sm text-muted-foreground">No comments yet. Start it off.</li>
           ) : null}
         </ul>
+
       </section>
     </div>
   );

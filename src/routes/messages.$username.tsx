@@ -7,7 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { fetchConversation, fetchProfileByUsername, sendDirectMessage } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
-import { RoleBadge } from "@/components/role-badge";
 import { MessageText } from "@/components/message-text";
 import { MessageComposer } from "@/components/message-composer";
 
@@ -108,7 +107,6 @@ function DmThread() {
         <UserAvatar username={other.username} avatarUrl={other.avatar_url} />
         <span className="flex items-center gap-1.5 font-display text-xl font-bold">
           @{other.username}
-          <RoleBadge role={other.role} />
         </span>
       </Link>
 

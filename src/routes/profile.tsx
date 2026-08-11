@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { fetchProfile, fileToAvatarDataUrl, updateAvatar, updateBio } from "@/lib/community";
-import { RoleBadge } from "@/components/role-badge";
 import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/user-avatar";
 import { Button } from "@/components/ui/button";
@@ -111,7 +110,6 @@ function ProfilePage() {
         <div className="space-y-3">
           <p className="flex items-center gap-2 font-semibold">
             @{profile?.username ?? username ?? "you"}
-            <RoleBadge role={profile?.role} />
           </p>
           <div className="flex flex-wrap gap-2">
             <Button size="sm" disabled={busy} onClick={() => fileRef.current?.click()}>

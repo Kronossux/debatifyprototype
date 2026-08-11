@@ -4,7 +4,6 @@ import { MessageCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { fetchArticles, fetchProfileByUsername } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
-import { RoleBadge } from "@/components/role-badge";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/u/$username")({
@@ -70,7 +69,6 @@ function PublicProfilePage() {
         <div className="min-w-0 flex-1">
           <h1 className="flex items-center gap-2 font-display text-2xl font-bold">
             @{profile.username}
-            <RoleBadge role={profile.role} className="size-6" />
           </h1>
           {profile.role && profile.role !== "user" ? (
             <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-accent">

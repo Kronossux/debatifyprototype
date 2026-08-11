@@ -5,7 +5,6 @@ import { ArrowLeft } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { deleteArticle, fetchArticle } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
-import { RoleBadge } from "@/components/role-badge";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/articles/$articleId")({
@@ -96,7 +95,6 @@ function ArticleDetail() {
               <Link to="/u/$username" params={{ username: data.author }} className="hover:underline">
                 @{data.author}
               </Link>
-              <RoleBadge role={data.role} className="size-4" />
             </p>
             <p className="text-muted-foreground">
               {new Date(data.created_at).toLocaleDateString(undefined, {

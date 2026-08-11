@@ -165,12 +165,13 @@ export type ChatMessage = {
   author: string;
   avatar_url: string | null;
   role: AppRole | null;
+  deleted_at: string | null;
 };
 
 export async function fetchChat(limit = 100): Promise<ChatMessage[]> {
   const { data, error } = await supabase
     .from("chat_messages")
-    .select("id, body, image_url, created_at, user_id")
+    .select("id, body, image_url, created_at, user_id, deleted_at")
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
@@ -183,6 +184,7 @@ export async function fetchChat(limit = 100): Promise<ChatMessage[]> {
     role: profiles.get(r.user_id)?.role ?? null,
   }));
 }
+
 
 export async function sendChatMessage(userId: string, body: string, imageUrl?: string | null) {
   const { error } = await supabase
@@ -309,6 +311,7 @@ export async function searchAll(term: string) {
 
 export type DirectMessage = {
   id: string;
+  deleted_at?: string | null;
   sender_id: string;
   recipient_id: string;
   body: string;
@@ -322,7 +325,7 @@ export async function fetchConversation(
 ): Promise<DirectMessage[]> {
   const { data, error } = await supabase
     .from("direct_messages")
-    .select("id, sender_id, recipient_id, body, image_url, created_at")
+    .select("id, sender_id, recipient_id, body, image_url, created_at, deleted_at")
     .or(
       `and(sender_id.eq.${userId},recipient_id.eq.${otherId}),and(sender_id.eq.${otherId},recipient_id.eq.${userId})`,
     )
@@ -355,7 +358,7 @@ export type Conversation = {
 export async function fetchInbox(userId: string): Promise<Conversation[]> {
   const { data, error } = await supabase
     .from("direct_messages")
-    .select("id, sender_id, recipient_id, body, image_url, created_at")
+    .select("id, sender_id, recipient_id, body, image_url, created_at, deleted_at")
     .order("created_at", { ascending: false })
     .limit(300);
   if (error) throw error;
@@ -372,4 +375,134 @@ export async function fetchInbox(userId: string): Promise<Conversation[]> {
       return other ? { other, last } : null;
     })
     .filter((c): c is Conversation => c !== null);
+}
+
+/* ------------------------------ suggestion box ----------------------------- */
+
+export type Suggestion = {
+  id: string;
+  user_id: string;
+  body: string;
+  status: string;
+  created_at: string;
+};
+
+export async function sendSuggestion(userId: string, body: string) {
+  const { error } = await supabase
+    .from("suggestions")
+    .insert({ user_id: userId, body: body.trim().slice(0, 2000) });
+  if (error) throw error;
+}
+
+/** Own suggestions for members; every suggestion for the admin (RLS decides). */
+export async function fetchSuggestions(): Promise<(Suggestion & { author: string })[]> {
+  const { data, error } = await supabase
+    .from("suggestions")
+    .select("id, user_id, body, status, created_at")
+    .order("created_at", { ascending: false })
+    .limit(200);
+  if (error) throw error;
+  const rows = (data ?? []) as Suggestion[];
+  const profiles = await fetchProfiles(rows.map((r) => r.user_id));
+  return rows.map((r) => ({ ...r, author: profiles.get(r.user_id)?.username ?? "member" }));
+}
+
+/* ------------------------------- ban appeals ------------------------------- */
+
+export type AppealMessage = {
+  id: string;
+  user_id: string;
+  author_id: string;
+  body: string;
+  created_at: string;
+  author: string;
+  avatar_url: string | null;
+};
+
+export async function fetchAppeal(userId: string): Promise<AppealMessage[]> {
+  const { data, error } = await supabase
+    .from("ban_appeals")
+    .select("id, user_id, author_id, body, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  const rows = data ?? [];
+  const profiles = await fetchProfiles(rows.map((r) => r.author_id));
+  return rows.map((r) => ({
+    ...r,
+    author: profiles.get(r.author_id)?.username ?? "member",
+    avatar_url: profiles.get(r.author_id)?.avatar_url ?? null,
+  }));
+}
+
+export async function sendAppealMessage(threadUserId: string, authorId: string, body: string) {
+  const { error } = await supabase
+    .from("ban_appeals")
+    .insert({ user_id: threadUserId, author_id: authorId, body: body.trim().slice(0, 1500) });
+  if (error) throw error;
+}
+
+/** Every appeal thread, newest activity first. Staff only (RLS decides). */
+export async function fetchAppealThreads() {
+  const { data, error } = await supabase
+    .from("ban_appeals")
+    .select("id, user_id, author_id, body, created_at")
+    .order("created_at", { ascending: false })
+    .limit(300);
+  if (error) throw error;
+  const rows = data ?? [];
+  const latest = new Map<string, (typeof rows)[number]>();
+  for (const row of rows) if (!latest.has(row.user_id)) latest.set(row.user_id, row);
+  const profiles = await fetchProfiles([...latest.keys()]);
+  return [...latest.entries()].map(([userId, last]) => ({
+    userId,
+    username: profiles.get(userId)?.username ?? "member",
+    last,
+  }));
+}
+
+export async function isUserBanned(userId: string) {
+  const { data } = await supabase.from("profiles").select("banned_at, ban_reason").eq("id", userId).maybeSingle();
+  return { banned: !!data?.banned_at, reason: data?.ban_reason ?? "" };
+}
+
+/* ------------------------------ notifications ------------------------------ */
+
+export async function fetchSeenTimestamps(userId: string) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("messages_seen_at, reports_seen_at")
+    .eq("id", userId)
+    .maybeSingle();
+  return {
+    messages_seen_at: data?.messages_seen_at ?? new Date(0).toISOString(),
+    reports_seen_at: data?.reports_seen_at ?? new Date(0).toISOString(),
+  };
+}
+
+export async function markSeen(userId: string, field: "messages_seen_at" | "reports_seen_at") {
+  const now = new Date().toISOString();
+  const patch = field === "messages_seen_at" ? { messages_seen_at: now } : { reports_seen_at: now };
+  await supabase.from("profiles").update(patch).eq("id", userId);
+}
+
+/** Number of DMs received since the reader last opened their inbox. */
+export async function countUnreadMessages(userId: string, since: string) {
+  const { count } = await supabase
+    .from("direct_messages")
+    .select("id", { count: "exact", head: true })
+    .eq("recipient_id", userId)
+    .is("deleted_at", null)
+    .gt("created_at", since);
+  return count ?? 0;
+}
+
+/** Number of reports filed since staff last opened their dashboard. */
+export async function countNewReports(since: string) {
+  const { count } = await supabase
+    .from("reports")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "open")
+    .gt("created_at", since);
+  return count ?? 0;
 }
