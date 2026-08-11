@@ -6,7 +6,6 @@ import { useAuth } from "@/lib/auth";
 import { CATEGORIES, fetchCategories } from "@/lib/debatify";
 import { fetchArticles } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
-import { RoleBadge } from "@/components/role-badge";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/articles/")({
@@ -98,8 +97,7 @@ function ArticlesPage() {
               ) : null}
               <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                 <UserAvatar username={a.author} avatarUrl={a.avatar_url} className="size-6" />
-                @{a.author}
-                <RoleBadge role={a.role} className="size-4" />· {new Date(a.created_at).toLocaleDateString()}
+                @{a.author}· {new Date(a.created_at).toLocaleDateString()}
               </div>
 
             </Link>

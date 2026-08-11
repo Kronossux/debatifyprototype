@@ -133,12 +133,13 @@ export type CommentRow = {
   author: string;
   avatar_url: string | null;
   role: AppRole | null;
+  deleted_at: string | null;
 };
 
 export async function fetchComments(debateId: string): Promise<CommentRow[]> {
   const { data, error } = await supabase
     .from("comments")
-    .select("id, body, image_url, created_at, user_id")
+    .select("id, body, image_url, created_at, user_id, deleted_at")
     .eq("debate_id", debateId)
     .order("created_at", { ascending: false });
   if (error) throw error;
@@ -168,4 +169,50 @@ export function percent(stats: DebateStats) {
   if (stats.total_votes === 0) return { a: 50, b: 50, empty: true };
   const a = Math.round((stats.votes_a / stats.total_votes) * 100);
   return { a, b: 100 - a, empty: false };
+}
+
+export type TopUser = {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+  debates: number;
+  votes: number;
+  comments: number;
+  score: number;
+};
+
+/** Ranking of the most active members: debates started, votes cast, comments written. */
+export async function fetchTopUsers(limit = 20): Promise<TopUser[]> {
+  const [debates, votes, comments, profiles] = await Promise.all([
+    supabase.from("debates").select("created_by"),
+    supabase.from("votes").select("user_id"),
+    supabase.from("comments").select("user_id"),
+    supabase.from("profiles").select("id, username, avatar_url"),
+  ]);
+
+  const tally = new Map<string, { debates: number; votes: number; comments: number }>();
+  const bump = (id: string | null, key: "debates" | "votes" | "comments") => {
+    if (!id) return;
+    const row = tally.get(id) ?? { debates: 0, votes: 0, comments: 0 };
+    row[key] += 1;
+    tally.set(id, row);
+  };
+  for (const d of debates.data ?? []) bump(d.created_by, "debates");
+  for (const v of votes.data ?? []) bump(v.user_id, "votes");
+  for (const c of comments.data ?? []) bump(c.user_id, "comments");
+
+  return (profiles.data ?? [])
+    .map((p) => {
+      const row = tally.get(p.id) ?? { debates: 0, votes: 0, comments: 0 };
+      return {
+        id: p.id,
+        username: p.username,
+        avatar_url: p.avatar_url,
+        ...row,
+        score: row.debates * 5 + row.comments * 2 + row.votes,
+      };
+    })
+    .filter((u) => u.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
 }

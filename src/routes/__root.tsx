@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth";
 import { PreferencesProvider } from "@/lib/preferences";
+import { AutoTranslateProvider } from "@/lib/auto-translate";
+import { BannedBanner } from "@/components/banned-banner";
 import { SiteHeader } from "@/components/site-header";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -143,8 +145,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <PreferencesProvider>
         <AuthProvider>
+          <AutoTranslateProvider>
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
+            <BannedBanner />
             <main className="flex-1">
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
@@ -154,6 +158,7 @@ function RootComponent() {
             </footer>
           </div>
           <Toaster position="top-center" richColors />
+          </AutoTranslateProvider>
         </AuthProvider>
       </PreferencesProvider>
     </QueryClientProvider>

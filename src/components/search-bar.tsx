@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { searchAll } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
-import { RoleBadge } from "@/components/role-badge";
 import { Input } from "@/components/ui/input";
 
 /** Searches usernames and debate titles. */
@@ -70,7 +69,6 @@ export function SearchBar({ className }: { className?: string }) {
                 >
                   <UserAvatar username={u.username} avatarUrl={u.avatar_url} className="size-6" />
                   <span className="truncate">@{u.username}</span>
-                  <RoleBadge role={u.role} className="size-4" />
                 </Link>
               ))}
 

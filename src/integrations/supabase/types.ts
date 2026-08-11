@@ -50,6 +50,30 @@ export type Database = {
         }
         Relationships: []
       }
+      ban_appeals: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           active: boolean
@@ -81,6 +105,8 @@ export type Database = {
         Row: {
           body: string
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           image_url: string | null
           user_id: string
@@ -88,6 +114,8 @@ export type Database = {
         Insert: {
           body: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           image_url?: string | null
           user_id: string
@@ -95,6 +123,8 @@ export type Database = {
         Update: {
           body?: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           image_url?: string | null
           user_id?: string
@@ -106,6 +136,8 @@ export type Database = {
           body: string
           created_at: string
           debate_id: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           image_url: string | null
           user_id: string
@@ -114,6 +146,8 @@ export type Database = {
           body: string
           created_at?: string
           debate_id: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           image_url?: string | null
           user_id: string
@@ -122,6 +156,8 @@ export type Database = {
           body?: string
           created_at?: string
           debate_id?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           image_url?: string | null
           user_id?: string
@@ -183,6 +219,8 @@ export type Database = {
         Row: {
           body: string
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           image_url: string | null
           recipient_id: string
@@ -191,6 +229,8 @@ export type Database = {
         Insert: {
           body?: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           image_url?: string | null
           recipient_id: string
@@ -199,6 +239,8 @@ export type Database = {
         Update: {
           body?: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
           image_url?: string | null
           recipient_id?: string
@@ -214,6 +256,8 @@ export type Database = {
           bio: string
           created_at: string
           id: string
+          messages_seen_at: string
+          reports_seen_at: string
           username: string
           username_lower: string
         }
@@ -224,6 +268,8 @@ export type Database = {
           bio?: string
           created_at?: string
           id: string
+          messages_seen_at?: string
+          reports_seen_at?: string
           username: string
           username_lower: string
         }
@@ -234,6 +280,8 @@ export type Database = {
           bio?: string
           created_at?: string
           id?: string
+          messages_seen_at?: string
+          reports_seen_at?: string
           username?: string
           username_lower?: string
         }
@@ -320,6 +368,33 @@ export type Database = {
           id?: string
           target_id?: string | null
           target_type?: string
+        }
+        Relationships: []
+      }
+      suggestions: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

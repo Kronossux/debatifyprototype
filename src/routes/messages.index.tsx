@@ -3,9 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/lib/auth";
-import { fetchInbox } from "@/lib/community";
+import { fetchInbox, markSeen } from "@/lib/community";
 import { UserAvatar } from "@/components/user-avatar";
-import { RoleBadge } from "@/components/role-badge";
 
 export const Route = createFileRoute("/messages/")({
   head: () => ({
@@ -28,6 +27,10 @@ export const Route = createFileRoute("/messages/")({
 function Inbox() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) void markSeen(user.id, "messages_seen_at");
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth", search: { mode: "signin" }, replace: true });
@@ -58,7 +61,6 @@ function Inbox() {
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-1.5 text-sm font-semibold">
                   @{c.other.username}
-                  <RoleBadge role={c.other.role} className="size-4" />
                 </p>
                 <p className="truncate text-sm text-muted-foreground">
                   {c.last.body || "📷 Picture"}
